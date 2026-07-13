@@ -1,0 +1,278 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Tazminat Hesaplama (Kıdem / İhbar / İzin)</title>
+  <meta name="description" content="Kıdem tazminatı, ihbar tazminatı ve kullanılmamış izin ücreti için hızlı ve anlaşılır hesaplama aracı." />
+  <style>
+    :root{--bg:#0b1220;--card:#121a2b;--muted:#9fb0d0;--text:#e8eefc;--acc:#5aa9ff;--good:#22c55e;--bad:#ef4444;--warn:#f59e0b;}
+    *{box-sizing:border-box;font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif}
+    body{margin:0;background:linear-gradient(180deg,#070b14, #0b1220 40%, #070b14);color:var(--text)}
+    .wrap{max-width:980px;margin:0 auto;padding:24px}
+    .header{display:flex;gap:16px;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;margin-bottom:14px}
+    h1{font-size:22px;margin:0}
+    .sub{color:var(--muted);font-size:13px;margin-top:6px}
+    .grid{display:grid;grid-template-columns:1fr;gap:14px}
+    @media(min-width:920px){.grid{grid-template-columns:1.1fr .9fr}}
+    .card{background:rgba(18,26,43,.92);border:1px solid rgba(90,169,255,.18);border-radius:14px;padding:16px;box-shadow:0 10px 30px rgba(0,0,0,.35)}
+    label{display:block;font-size:13px;color:var(--muted);margin:12px 0 6px}
+    input,select{width:100%;padding:11px 12px;border-radius:10px;border:1px solid rgba(159,176,208,.25);background:#0a1020;color:var(--text);outline:none}
+    input:focus,select:focus{border-color:rgba(90,169,255,.6);box-shadow:0 0 0 3px rgba(90,169,255,.15)}
+    .help{font-size:12px;color:var(--muted);margin-top:6px;line-height:1.35}
+    .alert{margin-top:10px;border-radius:12px;padding:12px;border:1px solid rgba(245,158,11,.35);background:rgba(245,158,11,.08);color:#ffe7b7;font-size:12.5px;line-height:1.35}
+    .alert strong{color:#fff}
+    .row{display:grid;grid-template-columns:1fr;gap:10px}
+    @media(min-width:640px){.row{grid-template-columns:1fr 1fr}}
+    .btns{display:flex;gap:10px;flex-wrap:wrap;margin-top:14px}
+    button{cursor:pointer;border:0;border-radius:12px;padding:11px 14px;font-weight:600}
+    .primary{background:linear-gradient(90deg,#3b82f6,#5aa9ff);color:#081025}
+    .ghost{background:transparent;border:1px solid rgba(159,176,208,.25);color:var(--text)}
+    .mini{padding:9px 12px;border-radius:10px;font-weight:600;font-size:13px}
+    .result h2{margin:0 0 10px;font-size:16px}
+    .table{width:100%;border-collapse:separate;border-spacing:0 10px}
+    .table tr{background:#0a1020;border:1px solid rgba(159,176,208,.18)}
+    .table td{padding:10px 12px;vertical-align:top}
+    .table tr{border-radius:12px;overflow:hidden}
+    .pill{display:inline-block;font-size:11px;padding:2px 8px;border-radius:999px;background:rgba(90,169,255,.15);border:1px solid rgba(90,169,255,.25);color:#cfe5ff;margin-left:8px}
+    .big{font-size:18px;font-weight:800}
+    .muted{color:var(--muted);font-size:12px;line-height:1.35}
+    .ok{color:var(--good);font-weight:700}
+    .bad{color:var(--bad);font-weight:700}
+    .hr{height:1px;background:rgba(159,176,208,.15);margin:14px 0}
+    .note{font-size:12px;color:var(--muted);line-height:1.45}
+    a{color:#a9d2ff}
+    .footer{margin-top:14px;color:var(--muted);font-size:12px;line-height:1.5}
+    .hidden{display:none}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="header">
+      <div>
+        <h1>Tazminat Hesaplama</h1>
+        <div class="sub">Kıdem • İhbar • Kullanılmamış izin ücreti — sade anlatım, hızlı hesap.</div>
+      </div>
+      <div class="sub">Veriler kaydedilmez. Hesaplama cihazınızda yapılır.</div>
+    </div>
+
+    <div class="grid">
+      <div class="card">
+        <div class="row">
+          <div>
+            <label>İşe başlama tarihi</label>
+            <input id="startDate" type="date" />
+            <div class="help">Deneme süresi dahil, işe girdiğiniz ilk gün.</div>
+          </div>
+          <div>
+            <label>İşten çıkış tarihi</label>
+            <input id="endDate" type="date" />
+            <div class="help">Henüz çıkmadıysanız bugünün tarihini seçebilirsiniz.</div>
+          </div>
+        </div>
+
+        <label>Brüt kazanç (aylık) <span class="pill">en kritik alan</span></label>
+        <input id="grossMonthly" type="number" inputmode="decimal" placeholder="Örn: 35000" />
+        <div class="alert">
+          <strong>Çok önemli:</strong> Buraya “banka hesabına yatan net maaş” değil,
+          <strong>e-Devlet 4A Hizmet Dökümü</strong> ekranında ilgili ay için görünen <strong>Brüt Kazanç</strong> tutarını yazın.
+          <br />
+          <a target="_blank" rel="noopener" href="https://www.turkiye.gov.tr/sgk-tescil-ve-hizmet-dokumu">e‑Devlet 4A Hizmet Dökümü’nü aç</a>
+        </div>
+        <div class="help">Not: Bu araç bilgilendirme amaçlıdır; kesin hesap için uzman görüşü alın.</div>
+
+        <div class="row">
+          <div>
+            <label>Kullanılmamış izin günü</label>
+            <input id="unusedLeaveDays" type="number" inputmode="numeric" value="0" min="0" />
+            <div class="help">Çıkış gününde kalan izin gün sayısı (bilmiyorsanız 0 yazabilirsiniz).</div>
+          </div>
+          <div>
+            <label>İhbar durumu</label>
+            <select id="noticeMode">
+              <option value="unknown" selected>Bilmiyorum / emin değilim</option>
+              <option value="noNotice">Bana önceden haber verilmedi (ihbar yok)</option>
+              <option value="givenNotice">Bana önceden haber verildi (ihbar var)</option>
+            </select>
+            <div class="help">İhbar, işverenin önceden bildirim yapmaması halinde doğar (bazı durumlarda değişebilir).</div>
+          </div>
+        </div>
+
+        <div class="btns">
+          <button class="primary" id="calcBtn">Hesapla</button>
+          <button class="ghost" id="resetBtn">Sıfırla</button>
+          <button class="ghost mini hidden" id="downloadBtn">Sonucu resim indir</button>
+        </div>
+
+        <div class="footer">
+          <strong>Hukuki uyarı:</strong> Bu araç hukuki danışmanlık değildir. Sonuçlar yaklaşık/bilgilendirme amaçlıdır.
+          Damga vergisi, tavan uygulaması, fesih nedeni, yan haklar (yol/yemek/prim), eksik günler vb. duruma göre değişebilir.
+        </div>
+      </div>
+
+      <div class="card result" id="resultCard">
+        <h2>Sonuç</h2>
+        <div id="resultEmpty" class="muted">Sol taraftan bilgileri girip <strong>Hesapla</strong>’ya basın.</div>
+
+        <div id="resultArea" class="hidden">
+          <table class="table" id="resultTable">
+            <tr>
+              <td style="width:42%">
+                <div><strong>🧓 Kıdem tazminatı</strong></div>
+                <div class="muted">Her çalışılan yıl için (genelde 30 günlük brüt).</div>
+              </td>
+              <td>
+                <div class="big" id="kidemTL">-</div>
+                <div class="muted" id="kidemDesc"></div>
+              </td>
+            </tr>
+            <tr>
+              <td>
+                <div><strong>⚠️ İhbar tazminatı</strong></div>
+                <div class="muted">Önceden bildirim yapılmadıysa (hafta sayısı kıdeme göre).</div>
+              </td>
+              <td>
+                <div class="big" id="ihbarTL">-</div>
+                <div class="muted" id="ihbarDesc"></div>
+              </td>
+            </tr>
+            <tr>
+              <td>
+                <div><strong>🏖️ Kullanılmamış izin ücreti</strong></div>
+                <div class="muted">Kalan izin günü × günlük brüt.</div>
+              </td>
+              <td>
+                <div class="big" id="izinTL">-</div>
+                <div class="muted" id="izinDesc"></div>
+              </td>
+            </tr>
+            <tr>
+              <td>
+                <div><strong>Toplam (brüt)</strong></div>
+                <div class="muted">Kesintiler hariç.</div>
+              </td>
+              <td>
+                <div class="big" id="totalGrossTL">-</div>
+                <div class="muted">Net tutar; kesintiler, tavan, fesih nedeni gibi etkenlere göre değişebilir.</div>
+              </td>
+            </tr>
+          </table>
+
+          <div class="hr"></div>
+          <div class="note" id="extraNotes"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+<script>
+  const el = (id) => document.getElementById(id);
+
+  function parseNumber(x){
+    if (x === null || x === undefined) return NaN;
+    const s = String(x).replace(",", ".").trim();
+    return Number(s);
+  }
+  function toTL(n){
+    if (!isFinite(n)) return "-";
+    return n.toLocaleString("tr-TR", { style:"currency", currency:"TRY", maximumFractionDigits: 2 });
+  }
+  function daysBetween(a,b){
+    const ms = b.getTime() - a.getTime();
+    return Math.floor(ms / (1000*60*60*24));
+  }
+
+  // Basit/approx ihbar hafta hesabı (kıdeme göre):
+  // 0-6 ay:2 hafta, 6-18 ay:4 hafta, 18-36 ay:6 hafta, 36+ ay:8 hafta
+  function noticeWeeksByTenureDays(tenureDays){
+    const months = tenureDays / 30;
+    if (months < 6) return 2;
+    if (months < 18) return 4;
+    if (months < 36) return 6;
+    return 8;
+  }
+
+  function calc(){
+    const s = el("startDate").value ? new Date(el("startDate").value) : null;
+    const e = el("endDate").value ? new Date(el("endDate").value) : null;
+    const gross = parseNumber(el("grossMonthly").value);
+    const leaveDays = Math.max(0, Math.floor(parseNumber(el("unusedLeaveDays").value) || 0));
+    const noticeMode = el("noticeMode").value;
+
+    if (!s || !e || !isFinite(gross) || gross <= 0){
+      alert("Lütfen işe başlama, çıkış tarihi ve brüt kazanç alanlarını doldurun.");
+      return;
+    }
+    if (e < s){
+      alert("Çıkış tarihi, işe başlama tarihinden önce olamaz.");
+      return;
+    }
+
+    const tenureDays = daysBetween(s, e) + 1; // dahil
+    const tenureYears = tenureDays / 365.0;
+
+    // Günlük brüt (yaklaşık): aylık/30
+    const dailyGross = gross / 30;
+
+    // Kıdem (yaklaşık): her yıl için 30 günlük brüt => yıllar * aylık brüt
+    let kidem = gross * tenureYears;
+
+    // İhbar
+    const weeks = noticeWeeksByTenureDays(tenureDays);
+    const ihbarGross = (gross / 30) * (weeks * 7);
+
+    let ihbar = 0;
+    let ihbarText = "";
+    if (noticeMode === "givenNotice"){
+      ihbar = 0;
+      ihbarText = "Bildirim yapıldı seçtiğiniz için ihbar 0 görünüyor.";
+    } else if (noticeMode === "noNotice"){
+      ihbar = ihbarGross;
+      ihbarText = `Kıdeminize göre yaklaşık ${weeks} hafta (≈ ${weeks*7} gün) üzerinden.`;
+    } else {
+      // bilinmiyor: iki senaryo da gösterelim; burada ortalama/varsayım yapmayalım
+      ihbar = ihbarGross;
+      ihbarText = `Emin değilseniz: bildirim yoksa yaklaşık ${weeks} hafta (≈ ${weeks*7} gün) olabilir.`;
+    }
+
+    const izin = dailyGross * leaveDays;
+    const totalGross = kidem + ihbar + izin;
+
+    el("resultEmpty").classList.add("hidden");
+    el("resultArea").classList.remove("hidden");
+    el("downloadBtn").classList.remove("hidden");
+
+    el("kidemTL").textContent = toTL(kidem);
+    el("ihbarTL").textContent = toTL(ihbar);
+    el("izinTL").textContent = toTL(izin);
+    el("totalGrossTL").textContent = toTL(totalGross);
+
+    el("kidemDesc").textContent = `Toplam çalışma süresi: ~${tenureYears.toFixed(2)} yıl (${tenureDays} gün).`;
+    el("ihbarDesc").textContent = ihbarText;
+    el("izinDesc").textContent = leaveDays > 0 ? `${leaveDays} gün × ${toTL(dailyGross)} (günlük brüt)` : "0 gün seçildi.";
+
+    const notes = [];
+    notes.push(`• Bu hesap “yaklaşık”tır. Tavan (kıdem tavanı), damga vergisi, yan haklar (yol/yemek/prim), fesih nedeni vb. sonuçları değiştirir.`);
+    notes.push(`• Brüt kazancı e‑Devlet 4A Hizmet Dökümü’nden girmeniz en doğru yaklaşımdır.`);
+    notes.push(`• İsterseniz sonucu ekran görüntüsü alıp WhatsApp’tan paylaşabilirsiniz (aşağıdaki buton ile resim olarak da indirebilirsiniz).`);
+    el("extraNotes").innerHTML = notes.map(x => `<div class="note">${x}</div>`).join("");
+  }
+
+  el("calcBtn").addEventListener("click", calc);
+
+  el("resetBtn").addEventListener("click", () => {
+    ["startDate","endDate","grossMonthly","unusedLeaveDays"].forEach(id => el(id).value = id==="unusedLeaveDays" ? 0 : "");
+    el("noticeMode").value = "unknown";
+    el("resultEmpty").classList.remove("hidden");
+    el("resultArea").classList.add("hidden");
+    el("downloadBtn").classList.add("hidden");
+  });
+
+  // Basit “sonucu resim indir”: tarayıcı print-to-pdf yerine canvas yaklaşımı için kütüphane gerekir.
+  // Kütüphanesiz en güvenli yöntem: print diyalogu.
+  el("downloadBtn").addEventListener("click", () => {
+    window.print();
+  });
+</script>
+</body>
+</html>
